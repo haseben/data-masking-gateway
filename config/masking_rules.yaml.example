@@ -1,0 +1,111 @@
+# 脱敏规则配置
+# 复制为 masking_rules.yaml 后按实际列名配置
+#
+# Action 说明:
+#   passthrough  — 原值返回
+#   tokenize     — HMAC-SHA256 稳定令牌（同值同令牌，支持跨查询关联）
+#   mask_phone   — 手机号遮掩 (138****5678)
+#   mask_email   — 邮箱遮掩 (z***@example.com)
+#   deny         — 置 null 拒绝返回
+#
+# 匹配优先级: table_overrides > 全局 rules > 聚合别名放行 > unknown_column deny
+# 列名匹配为大小写不敏感（英文 lower() 后匹配，中文原样匹配）
+# 支持中文列名：在同一条规则中直接添加中文别名即可
+
+defaults:
+  unknown_column: deny             # 未登记字段默认拒绝
+  tokenizer_placeholders:          # 这些值不令牌化，原样返回
+    - ""
+    - "N/A"
+    - "null"
+
+# 表级列覆盖：为特定表的同名列指定不同 action
+# 优先级高于全局规则
+table_overrides: {}
+  # 示例：
+  # department_table:
+  #   name: passthrough    # name 全局为 tokenize，但部门名称非敏感
+
+rules:
+  # === HMAC 稳定令牌化 ===
+  # 适合：需要跨查询关联但不暴露原始值的字段
+  # 中英文列名可混写在同一规则的 columns 中
+  - columns: ["customer_name", "client_name",
+              "客户姓名", "客户名称", "买家姓名"]
+    action: tokenize
+    namespace: customer
+    prefix: "CUST"
+
+  - columns: ["employee_name", "staff_name",
+              "员工姓名", "职员姓名", "人员姓名"]
+    action: tokenize
+    namespace: employee
+    prefix: "EMP"
+
+  - columns: ["supplier_name", "vendor_name",
+              "供应商名称", "供方名称", "卖方名称"]
+    action: tokenize
+    namespace: supplier
+    prefix: "SUP"
+
+  - columns: ["bill_no",
+              "单据编号", "单号", "订单号", "账单号"]
+    action: tokenize
+    namespace: bill
+    prefix: "BILL"
+
+  - columns: ["contact_name",
+              "联系人", "联系人姓名"]
+    action: tokenize
+    namespace: contact
+    prefix: "CONTACT"
+
+  # === 部分遮掩 ===
+  - columns: ["phone", "mobile", "telephone",
+              "手机号", "手机", "电话", "联系电话", "电话号码"]
+    action: mask_phone
+
+  - columns: ["email",
+              "电子邮箱", "邮箱", "邮件地址"]
+    action: mask_email
+
+  # === 拒绝返回 ===
+  - columns: ["id_card", "id_number", "passport_no",
+              "身份证号", "身份证", "证件号", "证件号码", "护照号"]
+    action: deny
+
+  - columns: ["bank_account", "bank_account_no", "account_no",
+              "银行卡号", "银行账号", "账号", "账户号"]
+    action: deny
+
+  - columns: ["password", "secret", "api_key", "token",
+              "密码", "密钥", "口令", "访问令牌", "凭证"]
+    action: deny
+
+  - columns: ["address", "home_address",
+              "地址", "家庭住址", "住址", "联系地址", "通讯地址"]
+    action: deny
+
+  - columns: ["remark", "comment", "description", "note",
+              "备注", "评论", "描述", "说明", "笔记", "批注"]
+    action: deny
+
+  - columns: ["attachment_url", "raw_json",
+              "附件地址", "附件链接", "原始数据"]
+    action: deny
+
+  # === 原值通过 ===
+  # 数值类
+  - columns: ["amount", "quantity", "price", "total", "sum", "balance",
+              "金额", "数量", "价格", "总价", "合计", "余额", "单价"]
+    action: passthrough
+
+  # 时间类
+  - columns: ["created_at", "updated_at", "deleted_at", "date", "year", "month",
+              "创建时间", "更新时间", "日期", "年", "月"]
+    action: passthrough
+
+  # 标识类
+  - columns: ["id", "status", "type", "code", "name_code",
+              "编号", "状态", "类型", "代码", "名称代码"]
+    action: passthrough

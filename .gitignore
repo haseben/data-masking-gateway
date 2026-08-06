@@ -1,0 +1,31 @@
+# ── 敏感凭据（绝不提交）──
+.env
+加密配置.txt
+*.pem
+tokens.json
+
+# ── 工作配置文件（仅保留 .yaml.example 模板）──
+config/datasource.yaml
+config/gateway.yaml
+config/masking_rules.yaml
+config/roles.yaml
+
+# ── Python ──
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# ── 运行时生成 ──
+logs/
+
+# ── IDE ──
+.vscode/
+.idea/
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── 临时验证脚本 ──
+verify_masking.py

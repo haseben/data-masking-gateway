@@ -1,0 +1,59 @@
+# 数据源配置
+# 复制为 datasource.yaml 后填入实际连接信息
+
+# 数据源列表：可配置多个数据库连接
+# type 字段决定驱动和 SQL 方言：
+#   mysql      → aiomysql 驱动，sqlglot "mysql" 方言
+#   mariadb    → 同 mysql
+#   sqlserver  → aioodbc 驱动，sqlglot "tsql" 方言
+#   postgresql → psycopg 驱动，sqlglot "postgres" 方言（预留）
+
+datasources:
+  # 默认数据源（通用查询和固定工具默认使用）
+  - name: default
+    type: mysql              # 数据库类型: mysql / sqlserver
+    host: 127.0.0.1
+    port: 3306
+    user: readonly_user
+    password: "${DB_PASSWORD}"   # 从环境变量读取
+    database: your_database
+    charset: utf8mb4
+    minsize: 2
+    maxsize: 10
+
+  # SQL Server 数据源示例
+  # - name: sqlserver_ds
+  #   type: sqlserver
+  #   host: 127.0.0.1
+  #   port: 1433
+  #   user: readonly_user
+  #   password: "${DB_PASSWORD}"
+  #   database: your_database
+  #   schema: dbo                    # SQL Server schema（默认 dbo）
+  #   driver: "ODBC Driver 18 for SQL Server"  # ODBC 驱动名
+  #   encrypt: yes                            # 加密连接
+  #   trust_server_certificate: yes           # 信任自签名证书
+  #   minsize: 2
+  #   maxsize: 10
+
+  # 可选：额外的 MySQL 数据源
+  # - name: secondary
+  #   type: mysql
+  #   host: 10.0.0.2
+  #   port: 3306
+  #   user: readonly_user
+  #   password: "${DB_SECONDARY_PASSWORD}"
+  #   database: another_database
+
+# 表名 → 数据源路由规则
+# 支持通配符前缀匹配（* 结尾），按声明顺序匹配，首个命中生效
+# 未匹配的表默认使用 "default" 数据源
+table_routing:
+  # 示例：以 ods_ 开头的表路由到 secondary 数据源
+  # - pattern: "ods_*"
+  #   datasource: secondary
+  # 示例：以 ext_ 开头的表路由到 secondary 数据源
+  # - pattern: "ext_*"
+  #   datasource: secondary
+  - pattern: "*"
+    datasource: default

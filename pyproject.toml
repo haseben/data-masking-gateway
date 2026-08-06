@@ -1,0 +1,18 @@
+[project]
+name = "data-masking-gateway"
+version = "1.0.0"
+description = "通用数据库脱敏 MCP 网关 - 带 SQL 安全校验、动态脱敏和审计日志"
+requires-python = ">=3.11"
+dependencies = [
+    "fastmcp>=3.0",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "aiomysql>=0.2",
+    "python-dotenv>=1.0",
+    "sqlglot>=25.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+sqlserver = ["aioodbc>=0.5"]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23"]

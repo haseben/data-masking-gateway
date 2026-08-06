@@ -1,0 +1,45 @@
+# 角色权限配置
+# 复制为 roles.yaml 后修改为你的实际角色和表名
+
+roles:
+  # viewer 角色：通过公网访问，仅可使用固定工具，表范围受限
+  viewer:
+    allowed_tables:
+      - v_example_view
+    max_rows: 1000
+    timeout_seconds: 10
+    max_concurrent: 2
+    allow_explain: false
+    allow_union: false
+    allow_generic_query: false
+
+  # developer 角色：通过 SSH 隧道访问，可使用通用查询，表范围更广
+  developer:
+    allowed_tables:
+      # 按实际数据库结构填写表名（小写）
+      - dws_example_summary
+      - dwd_example_detail
+      - dim_example_dimension
+      - v_example_view
+    max_rows: 5000
+    timeout_seconds: 30
+    max_concurrent: 5
+    allow_explain: true
+    allow_union: true
+    max_union_depth: 2
+    allow_generic_query: true
+    allow_audit_log: true
+
+# 大表列表：查询这些表时必须包含时间过滤条件
+# 时间过滤列由下方 large_table_filter_columns 定义
+large_tables:
+  - dws_example_summary
+  - dwd_example_detail
+
+# 大表查询必须包含的 WHERE 过滤列（满足其一即可）
+# 通常配置为时间/年月维度的列名
+large_table_filter_columns:
+  - n_year
+  - n_period
+  - fyear
+  - fperiod

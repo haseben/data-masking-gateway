@@ -1,0 +1,21 @@
+# Docker 构建忽略文件
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+.env
+*.pem
+tokens.json
+logs/
+*.log
+.git/
+.gitignore
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+加密配置.txt
+test_random_tables.py
+verify_masking.py

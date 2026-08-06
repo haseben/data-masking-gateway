@@ -1,0 +1,31 @@
+# 网关元信息配置
+# 复制为 gateway.yaml 后修改为你的实际信息
+
+# 网关名称（显示在 FastAPI 文档和 MCP 服务名中）
+name: "Data Masking Gateway"
+
+# 网关描述
+description: "为 AI Agent 提供安全、脱敏的数据库查询能力"
+
+# MCP 服务名称（用于 FastMCP 实例）
+mcp_server_name: "DataMaskingGateway"
+
+# MCP instructions — 告诉 AI Agent 这个网关能做什么
+# 每次部署按实际业务修改
+instructions: |
+  你是企业数据中心的查询助手。
+  你可以查询企业数据库中的数据。
+  重要约束：
+  - 所有查询均为只读操作
+  - 敏感字段（客户名、员工名、手机号等）会自动脱敏
+  - 金额、日期、状态等分析维度保留原值
+
+# 审计日志时区（IANA 时区名称）
+timezone: "Asia/Shanghai"
+
+# 启用的插件列表（对应 tools/plugins/ 目录下的模块名，不含 .py）
+# 留空则不加载任何业务插件，仅保留内置工具
+plugins:
+  enabled: []
+  # enabled:
+  #   - example_query
